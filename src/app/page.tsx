@@ -736,8 +736,6 @@ export default function Home() {
             </p>
           </div>
           <div className="border-t border-slate-800">
-            // TODO: De actualizat textul de la Privacy Policy conform
-            cerințelor GDPR.
             <FAQItem
               question="Îmi stocați sau îmi citiți emailurile personale?"
               answer="Nu. ZephyrSec aplică principiul Privacy by Design. Nu stocăm conținutul (body-ul) emailurilor. Extragem doar headerele tehnice (SPF/DKIM) și link-urile. Metadatele scanărilor sunt trimise către Firestore doar pentru analiză și sunt șterse ireversibil după 30 de zile."
@@ -748,7 +746,7 @@ export default function Home() {
             />
             <FAQItem
               question="ZephyrSec funcționează și pe telefonul mobil?"
-              answer="În acest moment, datorită limitărilor impuse de Google Workspace pentru extensii, interfața completă de avertizare vizuală este disponibilă doar în versiunea web (desktop) a Gmail."
+              answer="Da. ZephyrSec este pe deplin compatibil cu dispozitivele mobile și poate fi utilizat fără restricții pe telefon sau tabletă. Platforma oferă aceeași experiență de securitate și protecție indiferent de dispozitivul folosit, astfel încât utilizatorii beneficiază de monitorizare și funcționalități complete atât pe desktop, cât și pe mobil."
             />
           </div>
         </div>
