@@ -1,10 +1,17 @@
 "use client";
 
 import { AnimatePresence, motion, Variants } from "framer-motion";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-// --- COMPONENTA: Logo ZephyrSec (Scutul Fragmentat) ---
+// Importăm fundalul animat din fișierul separat pe care tocmai l-ai creat
+const NetworkBackground = dynamic(
+  () => import("@/components/NetworkBackground"),
+  { ssr: false },
+);
+
+// --- COMPONENTA: Logo ZephyrSec ---
 const ZephyrLogo = ({ className }: { className?: string }) => (
   <svg
     viewBox="0 0 100 100"
@@ -12,31 +19,24 @@ const ZephyrLogo = ({ className }: { className?: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    {/* Fragment Stânga Sus */}
     <path d="M 20 40 L 45 30 L 45 60 Z" fill="#3B82F6" opacity="0.6" />
-
-    {/* Fragment Dreapta - Partea principală */}
     <path d="M 55 25 L 80 35 L 80 50 Q 80 75 55 90 L 55 55 Z" fill="#06B6D4" />
-
-    {/* Punct de ancoră / Procesor */}
     <rect x="20" y="65" width="15" height="15" rx="4" fill="#F8FAFC" />
   </svg>
 );
 
 /* ========================================= */
-/* COMPONENTA 1: Scanner Animation (Optimized)*/
+/* COMPONENTA 1: Scanner Animation           */
 /* ========================================= */
 const ScannerAnimation = () => {
   const [step, setStep] = useState(0);
 
   useEffect(() => {
-    // Definim timpi diferiți (în milisecunde) pentru fiecare stare
     let delay = 2000;
-
-    if (step === 0) delay = 500; // Boot-up rapid: Dispariție aproape instantă
-    if (step === 1) delay = 1800; // Scanează
-    if (step === 2) delay = 2500; // Calculează Levenshtein
-    if (step === 3) delay = 4000; // Păstrează rezultatul pe ecran ca să poată fi citit
+    if (step === 0) delay = 500;
+    if (step === 1) delay = 1800;
+    if (step === 2) delay = 2500;
+    if (step === 3) delay = 4000;
 
     const timer = setTimeout(() => {
       setStep((prev) => (prev + 1) % 4);
@@ -46,10 +46,14 @@ const ScannerAnimation = () => {
   }, [step]);
 
   return (
-    <div className="bg-[#040914] border border-slate-800/60 rounded-2xl p-6 font-mono text-[13px] md:text-sm text-slate-400 h-64 flex flex-col justify-center relative shadow-2xl overflow-hidden">
+    <div className="bg-[#040914] border border-slate-800/60 rounded-2xl p-6 font-mono text-[13px] md:text-sm text-slate-400 h-64 flex flex-col justify-center relative shadow-2xl overflow-hidden backdrop-blur-sm bg-opacity-90">
       <div className="absolute top-4 right-5 flex items-center gap-2">
         <span
-          className={`w-2 h-2 rounded-full ${step === 3 ? "bg-rose-500 animate-pulse shadow-[0_0_10px_#F43F5E]" : "bg-cyan-500 animate-pulse shadow-[0_0_10px_#06B6D4]"}`}
+          className={`w-2 h-2 rounded-full ${
+            step === 3
+              ? "bg-rose-500 animate-pulse shadow-[0_0_10px_#F43F5E]"
+              : "bg-cyan-500 animate-pulse shadow-[0_0_10px_#06B6D4]"
+          }`}
         ></span>
       </div>
 
@@ -137,7 +141,7 @@ const FAQItem = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border-b border-slate-800">
+    <div className="border-b border-slate-800/50">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full py-6 flex justify-between items-center text-left focus:outline-none group"
@@ -188,7 +192,6 @@ const FAQItem = ({
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Animații Generale Pagina
   const fadeUp: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
@@ -198,7 +201,6 @@ export default function Home() {
     },
   };
 
-  // Animații Menu "Apple Style"
   const menuContainerVars: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -230,7 +232,6 @@ export default function Home() {
     exit: { opacity: 0, y: -10, transition: { duration: 0.2, ease: "easeIn" } },
   };
 
-  // Animație individuală pentru fiecare pas (Apple Style)
   const individualStepVars: Variants = {
     hidden: {
       opacity: 0,
@@ -245,12 +246,11 @@ export default function Home() {
       scale: 1,
       transition: {
         duration: 1.2,
-        ease: [0.22, 1, 0.36, 1], // Curba de viteză specifică Apple
+        ease: [0.22, 1, 0.36, 1],
       },
     },
   };
 
-  // Scroll Lock
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -260,16 +260,19 @@ export default function Home() {
   }, [isMobileMenuOpen]);
 
   return (
-    <main className="min-h-screen bg-[#020617] text-slate-200 font-sans selection:bg-cyan-500/30 overflow-x-hidden">
-      {/* Background Ambiental */}
-      <div className="absolute top-0 left-0 right-0 h-[80vh] overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[1200px] h-[800px] bg-gradient-to-b from-cyan-900/15 to-transparent blur-[120px] rounded-full"></div>
+    <main className="min-h-screen bg-transparent text-slate-200 font-sans selection:bg-cyan-500/30 overflow-x-hidden relative">
+      {/* FUNDALUL ANIMAT INJECTAT AICI */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <NetworkBackground />
       </div>
 
       {/* NAVBAR */}
-      {/* Dacă meniul e deschis, Navbar-ul devine transparent pentru o imersiune totală a ecranului */}
       <nav
-        className={`fixed w-full top-0 z-50 transition-all duration-300 ${isMobileMenuOpen ? "bg-transparent border-transparent" : "border-b border-slate-800/40 bg-[#020617]/80 backdrop-blur-xl"}`}
+        className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+          isMobileMenuOpen
+            ? "bg-transparent border-transparent"
+            : "border-b border-slate-800/40 bg-[#020617]/80 backdrop-blur-xl"
+        }`}
       >
         <div className="max-w-6xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
           <Link
@@ -342,7 +345,7 @@ export default function Home() {
             animate={{ opacity: 1, backdropFilter: "blur(32px)" }}
             exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-40 bg-[#020617]/80 flex flex-col justify-center px-8 md:hidden"
+            className="fixed inset-0 z-40 bg-[#020617]/90 flex flex-col justify-center px-8 md:hidden"
           >
             <motion.div
               variants={menuContainerVars}
@@ -371,7 +374,6 @@ export default function Home() {
                 </Link>
               </motion.div>
 
-              {/* Elegant Divider */}
               <motion.div
                 variants={menuItemVars}
                 className="w-12 h-[1px] bg-slate-700/50 my-2"
@@ -386,7 +388,6 @@ export default function Home() {
                 </button>
               </motion.div>
 
-              {/* Sub-links */}
               <motion.div
                 variants={menuItemVars}
                 className="flex gap-6 mt-6 text-sm font-medium text-slate-500"
@@ -447,7 +448,7 @@ export default function Home() {
           </button>
           <Link
             href="/architecture"
-            className="px-8 py-4 rounded-xl md:rounded-full border border-slate-700 bg-slate-800/30 hover:bg-slate-800 transition-colors font-medium text-lg text-slate-200"
+            className="px-8 py-4 rounded-xl md:rounded-full border border-slate-700 bg-slate-800/30 backdrop-blur-sm hover:bg-slate-800 transition-colors font-medium text-lg text-slate-200"
           >
             Descoperă Tehnologia
           </Link>
@@ -460,7 +461,7 @@ export default function Home() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
         variants={fadeUp}
-        className="relative z-10 py-16 md:py-24 px-4 md:px-6 max-w-6xl mx-auto border-t border-slate-800/50"
+        className="relative z-10 py-16 md:py-24 px-4 md:px-6 max-w-6xl mx-auto border-t border-slate-800/50 bg-[#020617]/50 backdrop-blur-md rounded-3xl"
       >
         <div className="flex flex-col lg:flex-row items-center gap-10 md:gap-16">
           <div className="lg:w-1/2">
@@ -510,7 +511,7 @@ export default function Home() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
         variants={fadeUp}
-        className="py-16 md:py-24 px-4 md:px-6 bg-[#040914] border-y border-slate-800/50"
+        className="relative z-10 py-16 md:py-24 px-4 md:px-6 bg-[#040914]/80 backdrop-blur-md border-y border-slate-800/50 mt-10"
       >
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
@@ -523,7 +524,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            <div className="bg-[#020617] border border-slate-800 rounded-2xl p-6 md:p-8 hover:border-cyan-500/50 transition-colors">
+            <div className="bg-[#020617]/90 border border-slate-800/80 rounded-2xl p-6 md:p-8 hover:border-cyan-500/50 transition-colors">
               <div className="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center text-cyan-400 mb-6">
                 <svg
                   className="w-6 h-6"
@@ -557,7 +558,7 @@ export default function Home() {
                 </li>
               </ul>
             </div>
-            <div className="bg-[#020617] border border-slate-800 rounded-2xl p-6 md:p-8 hover:border-blue-500/50 transition-colors">
+            <div className="bg-[#020617]/90 border border-slate-800/80 rounded-2xl p-6 md:p-8 hover:border-blue-500/50 transition-colors">
               <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-400 mb-6">
                 <svg
                   className="w-6 h-6"
@@ -591,7 +592,7 @@ export default function Home() {
                 </li>
               </ul>
             </div>
-            <div className="bg-[#020617] border border-slate-800 rounded-2xl p-6 md:p-8 hover:border-purple-500/50 transition-colors">
+            <div className="bg-[#020617]/90 border border-slate-800/80 rounded-2xl p-6 md:p-8 hover:border-purple-500/50 transition-colors">
               <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-400 mb-6">
                 <svg
                   className="w-6 h-6"
@@ -629,8 +630,8 @@ export default function Home() {
         </div>
       </motion.section>
 
-      {/* 4. HOW IT WORKS - Scroll Individual Trigger */}
-      <section className="py-24 md:py-40 px-4 md:px-6 max-w-4xl mx-auto">
+      {/* 4. HOW IT WORKS */}
+      <section className="relative z-10 py-24 md:py-40 px-4 md:px-6 max-w-4xl mx-auto">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -647,15 +648,12 @@ export default function Home() {
         </motion.div>
 
         <div className="space-y-24 md:space-y-40">
-          {" "}
-          {/* Am mărit spațiul între pași pentru a evidenția scroll-ul */}
-          {/* PASUL 1 */}
           <motion.div
             variants={individualStepVars}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }} // Trigger când 30% din pas e vizibil
-            className="flex flex-col md:flex-row gap-8 md:gap-12 items-start group"
+            viewport={{ once: true, amount: 0.3 }}
+            className="flex flex-col md:flex-row gap-8 md:gap-12 items-start group bg-[#020617]/50 p-6 rounded-2xl backdrop-blur-sm"
           >
             <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-bold text-3xl border border-cyan-500/20 shadow-[0_0_20px_rgba(6,182,212,0.1)] group-hover:bg-cyan-500/20 transition-all duration-700">
               1
@@ -671,13 +669,12 @@ export default function Home() {
               </p>
             </div>
           </motion.div>
-          {/* PASUL 2 */}
           <motion.div
             variants={individualStepVars}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            className="flex flex-col md:flex-row gap-8 md:gap-12 items-start group"
+            className="flex flex-col md:flex-row gap-8 md:gap-12 items-start group bg-[#020617]/50 p-6 rounded-2xl backdrop-blur-sm"
           >
             <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-3xl border border-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.1)] group-hover:bg-blue-500/20 transition-all duration-700">
               2
@@ -693,13 +690,12 @@ export default function Home() {
               </p>
             </div>
           </motion.div>
-          {/* PASUL 3 */}
           <motion.div
             variants={individualStepVars}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            className="flex flex-col md:flex-row gap-8 md:gap-12 items-start group"
+            className="flex flex-col md:flex-row gap-8 md:gap-12 items-start group bg-[#020617]/50 p-6 rounded-2xl backdrop-blur-sm"
           >
             <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-3xl border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.1)] group-hover:bg-emerald-500/20 transition-all duration-700">
               3
@@ -724,7 +720,7 @@ export default function Home() {
         whileInView="visible"
         viewport={{ once: true, amount: 0.1 }}
         variants={fadeUp}
-        className="py-16 md:py-24 px-4 md:px-6 bg-[#040914] border-t border-slate-800/50"
+        className="relative z-10 py-16 md:py-24 px-4 md:px-6 bg-[#040914]/90 backdrop-blur-md border-t border-slate-800/50"
       >
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
@@ -753,7 +749,7 @@ export default function Home() {
       </motion.section>
 
       {/* FOOTER */}
-      <footer className="border-t border-slate-800/50 bg-[#020617]">
+      <footer className="relative z-10 border-t border-slate-800/50 bg-[#020617]">
         <div className="max-w-6xl mx-auto px-6 py-10 md:py-12 flex flex-col md:flex-row justify-between items-center gap-6 text-slate-500 text-sm text-center md:text-left">
           <p>© 2026 ZephyrSec. Proiect de Licență - Securitate Cibernetică.</p>
           <div className="flex gap-6">
